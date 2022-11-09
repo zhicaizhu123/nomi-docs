@@ -1,14 +1,14 @@
 ## [代码规范](/standard/basic/)
-- [HTML规范](/standard/basic/html)
-- [TS/JS规范](/standard/basic/script)
-- [SCSS/LESS/CSS规范](/standard/basic/style)
-- [Vue规范](/standard/basic/vue)
+- [HTML规范](/standard/basic/html.md)
+- [TS/JS规范](/standard/basic/script.md)
+- [SCSS/LESS/CSS规范](/standard/basic/style.md)
+- [Vue规范](/standard/basic/vue.md)
 
 ## [规范工具](/standard/tools/)
-- [prettier](/standard/tools/prettier)
-- [eslint](/standard/tools/eslint)
-- [stylelint](/standard/tools/stylelint)
-- [commitlint](/standard/tools/commitlint)
+- [prettier](/standard/tools/prettier.md)
+- [eslint](/standard/tools/eslint.md)
+- [stylelint](/standard/tools/stylelint.md)
+- [commitlint](/standard/tools/commitlint.md)
 
 ## [Typescript规范](/standard/typescript/)
 

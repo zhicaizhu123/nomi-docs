@@ -1,4 +1,4 @@
-- [prettier](/standard/tools/prettier)
-- [eslint](/standard/tools/eslint)
-- [stylelint](/standard/tools/stylelint)
-- [commitlint](/standard/tools/commitlint)
+- [prettier](/standard/tools/prettier.md)
+- [eslint](/standard/tools/eslint.md)
+- [stylelint](/standard/tools/stylelint.md)
+- [commitlint](/standard/tools/commitlint.md)
