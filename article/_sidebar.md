@@ -1,8 +1,8 @@
 <!-- nomi多包库 -->
-- [utils]()
+- [utils](/article/utils/)
 - [route-guard]()
-- [emoji]()
-- [upload]()
+- [emoji](/article/emoji/)
+- [upload](/article/upload/)
 
 <!-- webpack相关 -->
 - [webpack](/article/webpack)
