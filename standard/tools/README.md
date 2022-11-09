@@ -1,0 +1,4 @@
+- [prettier](/standard/tools/prettier)
+- [eslint](/standard/tools/eslint)
+- [stylelint](/standard/tools/stylelint)
+- [commitlint](/standard/tools/commitlint)

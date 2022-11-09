@@ -1,0 +1,4 @@
+- [HTML规范](/standard/basic/html)
+- [TS/JS规范](/standard/basic/script)
+- [SCSS/LESS/CSS规范](/standard/basic/style)
+- [Vue规范](/standard/basic/vue)

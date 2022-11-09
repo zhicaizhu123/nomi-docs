@@ -1,0 +1,14 @@
+{
+  "name": "PeterBlog",
+  "version": "1.0.0",
+  "description": "Peter's Blog",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "docsify-cli": "^4.4.4",
+    "prettier": "^2.7.1"
+  },
+  "scripts": {
+    "serve": "docsify serve"
+  }
+}

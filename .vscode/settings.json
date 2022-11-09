@@ -1,0 +1,15 @@
+{
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "editor.formatOnSave": true,
+  "editor.wordWrap": "on",
+  "eslint.validate": ["vue", "javascript", "html"],
+  "eslint.lintTask.enable": true,
+}
