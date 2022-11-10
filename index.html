@@ -14,6 +14,7 @@
   <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script> -->
   <style>
     :root {
+      --theme-color: #a851b4;
       /* Reduce the font size */
       /* --base-font-size: 14px; */
 
@@ -38,9 +39,6 @@
       loadNavbar: true, // 通过 Markdown 文件来配置导航。首先配置 loadNavbar，默认加载的文件为 _navbar.md
       loadSidebar: true, // 侧边栏会通过 Markdown 文件自动生成, 默认加载的文件为 _sidebar.md
       // autoHeader: true,
-      // alias: {
-      //   '/.*/_sidebar.md': '/_sidebar.md'
-      // },
       auto2top: true, // 切换页面后是否自动跳转到页面顶部
       topMargin: 60,
       externalLinkTarget: '_blank', //外链打开方式：_blank表示在新标签页中打开
@@ -60,7 +58,8 @@
         language: 'chinese'
       },
       footer: {
-        copy: '虽然技术在进步，但也想留下一些成长的记录',
+        copy: '沉淀前端技术，留下成长脚印',
+        auth: '—— by Nomi',
         pre: '<hr/>',
         style: 'text-align: left;',
       },//添加页脚
@@ -80,7 +79,7 @@
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/disqus.min.js"></script>
   <script src="//unpkg.com/docsify-count/dist/countable.js"></script>
   <!-- 添加页脚 -->
-  <script src="https://cdn.jsdelivr.net/gh/wugenqiang/NoteBook@master/plugin/docsify-footer-enh.min.js"></script>
+  <script src="//unpkg.com/docsify-footer-enh/dist/docsify-footer-enh.min.js"></script>
 </body>
 
 </html>
