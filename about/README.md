@@ -24,7 +24,7 @@
 - **GitHub：** [https://github.com/zhicaizhu123](https://github.com/zhicaizhu123)
 
 - **微信公众号：** 紫菜糯米
-  <img src="/_media/qrcode.jpg" style="width: 200px" />
+  <img src="https://zhicaizhu123.github.io/nomi-docs/_media/qrcode.jpg" style="width: 200px" />
 
 博客内容仅是个人的笔记与总结，有错误之处还请多多指正！
 
