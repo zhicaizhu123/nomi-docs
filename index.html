@@ -13,6 +13,37 @@
   <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
   <script src="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/js/docsify-themeable.min.js"></script> -->
 
+  <style>
+    .nomi-btn {
+      border-radius: 2rem;
+      border: 1px solid #42b983;
+      border-color: var(--theme-color, #42b983);
+      box-sizing: border-box;
+      color: #42b983;
+      color: var(--theme-color, #42b983);
+      display: inline-block;
+      font-size: 1.05rem;
+      letter-spacing: .1rem;
+      margin: 0.5rem 1rem;
+      padding: 0.75em 2rem;
+      text-decoration: none;
+      transition: all .15s ease;
+    }
+
+    .nomi-btn:hover {
+      opacity: .8;
+    }
+
+    .nomi-btn.primary {
+      background-color: #42b983;
+      background-color: var(--theme-color, #42b983);
+      color: #fff;
+    }
+
+    .nomi-btn.primary:hover {
+      color: #fff;
+    }
+  </style>
 </head>
 
 <body>
@@ -20,7 +51,7 @@
   <script>
     window.$docsify = {
       repo: 'zhicaizhu123/nomi-docs',
-      name: "NOMI",
+      name: '<img src="_media/logo.svg" style="height: 30px" />',
       nameLink: '/',
       coverpage: true,
       onlyCover: true, // 只在访问主页时加载封面。
@@ -30,6 +61,7 @@
         // '/.*/_sidebar.md': '/_sidebar.md',
         '/.*/_navbar.md': '/_navbar.md',
       },
+      // routerMode: 'history',
       // autoHeader: true,
       auto2top: true, // 切换页面后是否自动跳转到页面顶部
       topMargin: 60,
@@ -39,8 +71,8 @@
       themeColor: '#a851b4',
       search: {
         paths: 'auto',
-        placeholder: '搜索',
-        noData: '😒 找不到结果',
+        placeholder: '🔍 搜索',
+        noData: '<img src="_media/no-data.svg" style="height: 100px" /><div style="text-align: center; color: #aaa; font-size: 12px;">无搜索结果</div>',
         depth: 6,
         maxAge: 86400000, // 过期时间，单位毫秒，默认一天
       },//添加搜索框
