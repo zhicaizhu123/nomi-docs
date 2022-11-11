@@ -1,4 +1,5 @@
-- [首页](/)
 - [技术文档](/article/)
 - [前端规范](/standard/)
+- [工具库](/utils/)
+- [组件库](/components/)
 - [关于本站](/about/)

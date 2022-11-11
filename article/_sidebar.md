@@ -1,30 +1,26 @@
+- ES6+
+
+- CSS3
+
 <!-- nomi多包库 -->
-- [utils](/article/utils/README.md)
-- [route-guard](/article/route-guard/README.md)
-- [emoji](/article/emoji/README.md)
-- [upload](/article/upload/README.md)
+- 工具
+  - [utils](/article/utils/README.md)
+  - [route-guard](/article/route-guard/README.md)
+  - [emoji](/article/emoji/README.md)
+  - [upload](/article/upload/README.md)
 
 <!-- webpack相关 -->
-- [webpack](/article/webpack/README.md)
-  - [webpack-base](/article/webpack/webpack-base.md)
-  - [webpack-vue](/article/webpack/webpack-vue.md)
-  - [webpack-react](/article/webpack/webpack-react.md)
-  - [webpack-library](/article/webpack/webpack-library.md)
+- 打包构建
+  - [webpack](/article/webpack/README.md)
+  - [rollup](/article/rollup/README.md)
+  - [vite](/article/vite/README.md)
+  - [esbuild](/article/esbuild/README.md)
 
-<!-- rollup相关 -->
-- [rollup](/article/rollup/README.md)
-  - [rollup-vue](/article/rollup/rollup-vue.md)
-  - [rollup-react](/article/rollup/rollup-react.md)
-  - [rollup-library](/article/rollup/rollup-library.md)
-
-<!-- vite相关 -->
-- [vite](/article/vite/README.md)
-
-<!-- lerna -->
-- [lerna](/article/lerna/README.md)
-
-<!-- pnpm相关 -->
-- [pnpm](/article/pnpm/README.md)
+- 包管理
+  <!-- lerna -->
+  - [lerna](/article/lerna/README.md)
+  <!-- pnpm相关 -->
+  - [pnpm](/article/pnpm/README.md)
 
 <!-- typescript相关 -->
 - [Typescript](/article/typescript/README.md)
