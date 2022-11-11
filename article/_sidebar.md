@@ -29,7 +29,7 @@
 - [Vue](/article/vue/README.md)
 
 <!-- 服务端渲染 -->
-- [服务端渲染](/article//ssr/README.md)
+- [服务端渲染](/article/ssr/README.md)
 
 <!-- chrome相关 -->
 - [Chrome插件](/article/chrome/README.md)

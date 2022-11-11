@@ -49,7 +49,7 @@
 ## [Vue](/article/vue/README.md)
 > TODO: 待更新...
 
-## [服务端渲染](/article//ssr/README.md)
+## [服务端渲染](/article/ssr/README.md)
 > TODO: 待更新...
 
 
