@@ -394,3 +394,164 @@ useHead({
 })
 </script>
 ```
+
+## 动画
+`Nuxt`利用`Vue`的`<Transition>`组件在页面和布局之间实现过渡。
+
+### 切换页面动画
+我们可以在`nuxt.config.ts`启用`app.pageTransition`，为所有页面切换时添加过渡效果。
+```javascript
+export default defineNuxtConfig({
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' }
+  },
+})
+```
+在`app.vue`设置过渡动画样式
+```vue
+<template>
+  <NuxtPage />
+</template>
+ 
+<style>
+.page-enter-active,
+.page-leave-active {
+    transition: all 0.4s;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
+}
+</style>
+```
+如果要为某些页面指定特定的动画，我们可以设置`definePageMeta`方法中的`pageTransition`进行定制
+```vue
+<script setup lang="ts">
+definePageMeta({
+  pageTransition: {
+    name: 'rotate'
+  }
+})
+</script>
+```
+
+### 切换布局动画
+我们可以在`nuxt.config.ts`启用`app.layoutTransition`，为所有布局模版切换时添加过渡效果。
+```javascript
+export default defineNuxtConfig({
+  app: {
+    layoutTransition: { name: 'layout', mode: 'out-in' }
+  },
+})
+```
+在`app.vue`设置过渡动画样式
+```vue
+<template>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
+</template>
+
+<style>
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.4s;
+}
+.layout-enter-from,
+.layout-leave-to {
+  filter: grayscale(1);
+}
+</style>
+```
+然后在切换布局模板时就会使用我们设置的动画效果进行过渡。
+
+如果要为某些模版切换时指定特定的动画，我们可以设置`definePageMeta`方法中的`layoutTransition`进行定制
+```vue
+<script setup lang="ts">
+definePageMeta({
+  layout: 'orange',
+  layoutTransition: {
+    name: 'slide-in'
+  }
+})
+</script>
+```
+如果我们希望在特定页面禁用过渡动画效果
+```vue
+<script setup lang="ts">
+definePageMeta({
+  pageTransition: false
+  layoutTransition: false
+})
+</script>
+```
+当然也可以在`nuxt.config.ts`全局设置，让所有页面切换时禁用过渡动画效果
+```javascript
+defineNuxtConfig({
+  app: {
+    pageTransition: false,
+    layoutTransition: false
+  }
+})
+```
+
+### 动态设置过渡效果
+我们可以利用在内联中间件中根据条件设置`to.meta.pageTransition`实现不同的过渡效果。
+```vue
+<script setup lang="ts">
+definePageMeta({
+  pageTransition: {
+    name: 'slide-right',
+    mode: 'out-in'
+  },
+  middleware (to, from) {
+    to.meta.pageTransition.name = +to.params.id > +from.params.id ? 'slide-left' : 'slide-right'
+  }
+})
+</script>
+ 
+<template>
+  <h1>#{{ $route.params.id }}</h1>
+</template>
+ 
+<style>
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.2s;
+}
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translate(50px, 0);
+}
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translate(50px, 0);
+}
+</style>
+```
+
+### NuxtPage组件配置动画
+```vue
+<template>
+  <div>
+    <NuxtLayout>
+      <NuxtPage :transition="{
+        name: 'bounce',
+        mode: 'out-in'
+      }" />
+    </NuxtLayout>
+  </div>
+</template>
+```
+!> 不能在各个页面上使用definePageMeta重写此页面转换。

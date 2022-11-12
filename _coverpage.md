@@ -1,13 +1,10 @@
 <!-- logo -->
 
-<img src="_media/logo.svg" style="height: 60px" />
+![logo](_media/logo.svg ':size=212x60')
 
-<div style="margin-top: 16px">
-<img src="https://img.shields.io/github/stars/zhicaizhu123/nomi-docs" data-origin="https://img.shields.io/github/stars/zhicaizhu123/nomi-docs" /> 
-<img src="https://img.shields.io/github/forks/zhicaizhu123/nomi-docs" data-origin="https://img.shields.io/github/forks/zhicaizhu123/nomi-docs" />
-<img src="https://img.shields.io/github/license/zhicaizhu123/nomi-docs" data-origin="https://img.shields.io/github/license/zhicaizhu123/nomi-docs" />
-</div>
-
+![stars](https://img.shields.io/github/stars/zhicaizhu123/nomi-docs)
+![forks](https://img.shields.io/github/forks/zhicaizhu123/nomi-docs)
+![license](https://img.shields.io/github/license/zhicaizhu123/nomi-docs)
 
 - 沉淀前端技术，留下成长脚印
 

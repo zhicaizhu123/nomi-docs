@@ -394,3 +394,224 @@ useHead({
 })
 </script>
 ```
+
+## 动画
+`Nuxt`利用`Vue`的`<Transition>`组件在页面和布局之间实现过渡。
+
+### 页面动画
+我们可以在`nuxt.config.ts`启用`app.pageTransition`，为所有页面切换时添加过渡效果。
+```javascript
+export default defineNuxtConfig({
+  app: {
+    pageTransition: { name: 'page', mode: 'out-in' }
+  },
+})
+```
+在`app.vue`设置过渡动画样式
+```vue
+<template>
+  <NuxtPage />
+</template>
+ 
+<style>
+.page-enter-active,
+.page-leave-active {
+    transition: all 0.4s;
+}
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+  filter: blur(1rem);
+}
+</style>
+```
+如果要为某些页面指定特定的动画，我们可以设置`definePageMeta`方法中的`pageTransition`进行定制
+```vue
+<script setup lang="ts">
+definePageMeta({
+  pageTransition: {
+    name: 'rotate'
+  }
+})
+</script>
+```
+
+### 布局动画
+我们可以在`nuxt.config.ts`启用`app.layoutTransition`，为所有布局模版切换时添加过渡效果。
+```javascript
+export default defineNuxtConfig({
+  app: {
+    layoutTransition: { name: 'layout', mode: 'out-in' }
+  },
+})
+```
+在`app.vue`设置过渡动画样式
+```vue
+<template>
+  <NuxtLayout>
+    <NuxtPage />
+  </NuxtLayout>
+</template>
+
+<style>
+.layout-enter-active,
+.layout-leave-active {
+  transition: all 0.4s;
+}
+.layout-enter-from,
+.layout-leave-to {
+  filter: grayscale(1);
+}
+</style>
+```
+然后在切换布局模板时就会使用我们设置的动画效果进行过渡。
+
+如果要为某些模版切换时指定特定的动画，我们可以设置`definePageMeta`方法中的`layoutTransition`进行定制
+```vue
+<script setup lang="ts">
+definePageMeta({
+  layout: 'orange',
+  layoutTransition: {
+    name: 'slide-in'
+  }
+})
+</script>
+```
+如果我们希望在特定页面禁用过渡动画效果
+```vue
+<script setup lang="ts">
+definePageMeta({
+  pageTransition: false
+  layoutTransition: false
+})
+</script>
+```
+当然也可以在`nuxt.config.ts`全局设置，让所有页面切换时禁用过渡动画效果
+```javascript
+defineNuxtConfig({
+  app: {
+    pageTransition: false,
+    layoutTransition: false
+  }
+})
+```
+
+### 动态设置过渡效果
+我们可以利用在内联中间件中根据条件设置`to.meta.pageTransition`实现不同的过渡效果。
+```vue
+<script setup lang="ts">
+definePageMeta({
+  pageTransition: {
+    name: 'slide-right',
+    mode: 'out-in'
+  },
+  middleware (to, from) {
+    to.meta.pageTransition.name = +to.params.id > +from.params.id ? 'slide-left' : 'slide-right'
+  }
+})
+</script>
+ 
+<template>
+  <h1>#{{ $route.params.id }}</h1>
+</template>
+ 
+<style>
+.slide-left-enter-active,
+.slide-left-leave-active,
+.slide-right-enter-active,
+.slide-right-leave-active {
+  transition: all 0.2s;
+}
+.slide-left-enter-from {
+  opacity: 0;
+  transform: translate(50px, 0);
+}
+.slide-left-leave-to {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-enter-from {
+  opacity: 0;
+  transform: translate(-50px, 0);
+}
+.slide-right-leave-to {
+  opacity: 0;
+  transform: translate(50px, 0);
+}
+</style>
+```
+
+### NuxtPage组件配置动画
+```vue
+<template>
+  <div>
+    <NuxtLayout>
+      <NuxtPage :transition="{
+        name: 'bounce',
+        mode: 'out-in'
+      }" />
+    </NuxtLayout>
+  </div>
+</template>
+```
+!> 不能在各个页面上使用definePageMeta重写此页面转换。
+
+## 状态管理
+`Nuxt`提供了`useState`，可以跨组件创建响应性的、对`SSR`友好的共享状态。
+
+`useState`是一个`SSR` `ref` 替换。它的值将在服务器端渲染后保存(在客户端激活期间)，并使用唯一的键在所有组件之间共享。
+
+!>  useState只在`setup`或生命周期钩子间工作。
+
+### 最佳实践
+!> 永远不要在`<script setup>`或`setup()`函数之外定义c`onst state = ref()`。 这样的状态将被所有访问您的网站的用户共享，并可能导致内存泄漏！而是使用`const useX = () => useState('x')`。
+
+ ### 基础使用
+ ```vue
+<script setup>
+const counter = useState('counter', () => Math.round(Math.random() * 1000))
+</script>
+
+<template>
+  <div>
+    Counter: {{ counter }}
+    <button @click="counter++">
+      +
+    </button>
+    <button @click="counter--">
+      -
+    </button>
+  </div>
+</template>
+ ```
+
+### 数据共享
+假设我们在`composables/states.ts`下定义了以下状态
+```javascript
+export const useCounter = () => useState<number>('counter', () => 0)
+export const useColor = () => useState<string>('color', () => 'pink')
+```
+那么我们可以在组件内使用最新状态
+```vue
+<script setup>
+const color = useColor() // 和 useState('color') 作用一样
+</script>
+
+<template>
+  <p>Current color: {{ color }}</p>
+</template>
+```
+
+## 错误处理
+`Nuxt`是一个全栈框架，这意味着在不同的上下文中，有几种不可避免的用户运行时错误来源: 
+- `Vue`渲染生命周期中的错误(`SSR` + `SPA`) 
+- `API`或`Nitro`服务器生命周期中的错误 
+- 服务器和客户端启动错误(`SSR` + `SPA`)
+
+### `Vue`渲染生命周期中的错误(`SSR` + `SPA`) 
+我们可以使用`onErrorCaptured`来处理异常
+
+
+### `API`或`Nitro`服务器生命周期中的错误 
+
+### 服务器和客户端启动错误(`SSR` + `SPA`)
