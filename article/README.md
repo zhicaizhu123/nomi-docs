@@ -49,8 +49,9 @@
 ## [Vue](/article/vue/README.md)
 > TODO: 待更新...
 
-## [服务端渲染](/article/ssr/README.md)
-> TODO: 待更新...
+## [Nuxt](/article/ssr/README.md)
+- [基础篇](/article/ssr/basic/README.md)
+- [高级篇](/article/ssr/advance/README.md)
 
 
 <!-- chrome相关 -->

@@ -29,7 +29,9 @@
 - [Vue](/article/vue/README.md)
 
 <!-- 服务端渲染 -->
-- [服务端渲染](/article/ssr/README.md)
+- [Nuxt](/article/ssr/README.md)
+  - [基础篇](/article/ssr/basic/README.md)
+  - [高级篇](/article/ssr/advance/README.md)
 
 <!-- chrome相关 -->
 - [Chrome插件](/article/chrome/README.md)

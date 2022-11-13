@@ -1,3 +1,2 @@
-- [概念](/article/ssr/concept.md)
-- [基础知识](/article/ssr/basic/README.md)
-- [数据请求](/article/ssr/data-fetching.md)
+- [基础篇](/article/ssr/basic/README.md)
+- [高级篇](/article/ssr/advance/README.md)

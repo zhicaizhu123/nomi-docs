@@ -1,5 +1,4 @@
-# 基础知识
-> 使用nuxt3实现服务端渲染
+# Nuxt3基础知识
 
 ## 安装
 1. 使用脚手架创建nuxt项目
@@ -148,7 +147,7 @@ pages/
 
 ### 导航
 使用`<NuxtLink>`组件实现，它实际渲染一个`a`标签， 当`<NuxtLink>`被渲染到页面时，`Nuxt`会自动预加载链接对应页面的组件和有信心，从而实现更快的导航。
-```html
+```vue
 <ul>
     <li><NuxtLink to="/about">About</NuxtLink></li>
     <li><NuxtLink to="/posts/1">Post 1</NuxtLink></li>
@@ -556,6 +555,182 @@ definePageMeta({
 ```
 !> 不能在各个页面上使用definePageMeta重写此页面转换。
 
+## 数据请求
+### useFetch
+一般情况，组件和插件可以使用`useFetch`从任何URL进行通用的获取。
+
+`useFetch`提供了`useAsyncData`和`$fetch`的方便包装器。它根据URL和获取选项自动生成一个键，根据服务器路由为请求URL提供类型提示，并推断API响应类型。
+```vue
+<script setup>
+  const { data } = await useFetch('/api/getData')
+</script>
+<template>
+  title: {{ data.title }}
+</template>
+```
+
+### useLazyFetch
+`useLazyFetch`与带有`lazy: true`选项集的`useFetch`相同。换句话说，`async`函数不会阻塞导航。这意味着我们将要自己处理数据为不存在的情况。
+
+```vue
+<template>
+  <!-- 加载中 -->
+  <div v-if="pending">
+    Loading ...
+  </div>
+  <div v-else>
+    <div v-for="post in posts">
+      <!-- 主体内容 -->
+    </div>
+  </div>
+</template>
+
+<script setup>
+const { pending, data: posts } = useLazyFetch('/api/posts')
+watch(posts, (newPosts) => {
+  // 处理数据
+})
+</script>
+```
+
+### useAsyncData
+在页面中，组件和插件可以使用`useAsyncData`来访问异步解析的数据。
+
+```vue
+<script setup>
+const { data } = await useAsyncData('info', () => $fetch('/api/info'))
+</script>
+
+<template>
+  Page Info: {{ data }}
+</template>
+```
+
+?> `useFetch`接收URL并获取数据，而`useAsyncData`可能有更复杂的逻辑。`useFetch(url)`几乎等同于`useAsyncData(url, () => $fetch(url))`
+
+### useLazyAsyncData
+`useLazyAsyncData`与带有`lazy: true`选项集的`useAsyncData`相同。换句话说，`async`函数不会阻塞导航。这意味着我们将要自己处理数据为不存在的情况。
+
+```vue
+<template>
+  <div>
+    {{ pending ? 'Loading' : count }}
+  </div>
+</template>
+
+<script setup>
+const { pending, data: count } = useLazyAsyncData('count', () => $fetch('/api/count'))
+watch(count, (newCount) => {
+  // 处理数据
+})
+</script>
+```
+
+### 刷新数据
+在用户访问页面的整个过程中，您可能需要刷新从API加载的数据。如果用户选择分页、过滤结果、搜索等，就会发生这种情况。
+
+你可以使用从可组合的`useFetch()`返回的`refresh()`方法来刷新具有不同查询参数的数据:
+```vue
+<script setup>
+const page = ref(1);
+const { data: users, pending, refresh, error } = await useFetch(() => `users?page=${page.value}&count=10`, { baseURL: config.API_BASE_URL }
+);
+function previous() {
+  page.value--;
+  refresh();
+}
+function next() {
+  page.value++;
+  refresh();
+}
+</script>
+```
+
+默认情况下， `refresh()` 将取消任何挂起的请求；它们的结果不会更新数据或挂起状态。在此新请求解决之前，任何先前等待的`Promise`都不会解决。您可以通过设置 `dedupe` 选项来防止这种行为，如果有，它将改为返回当前正在执行的请求的`Promise`
+
+```javascript
+refresh({ dedupe: true })
+```
+
+#### refreshNuxtData
+使`useAsyncData`、`useLazyAsyncData`、`useFetch`和`useLazyFetch`的缓存失效并触发`refetch`。
+
+如果想刷新当前页面的所有数据，此方法很有用。
+
+```vue
+<template>
+  <div>
+    {{ pending ? 'Loading' : count }}
+  </div>
+  <button @click="refresh">Refresh</button>
+</template>
+
+<script setup>
+const { pending, data: count } = useLazyAsyncData('count', () => $fetch('/api/count'))
+const refresh = () => refreshNuxtData('count')
+</script>
+```
+
+#### clearNuxtData
+删除缓存数据、错误状态和 `useAsyncData` 和 `useFetch` 的未决策的`Promise`。
+
+如果想使另一个页面的数据获取无效，此方法很有用。
+
+### 最佳实践
+在上述函数返回的数据将存储在页面负载中。这意味着返回的每个未在组件中使用的字段都将被添加到负载中。
+
+?> 我们强烈建议您只选择您将在组件中使用的字段。
+
+假如`/api/getData`接口返回的响应数据结构如下
+```json
+{
+  "title": "Hello NOMI",
+  "description": "描述信息",
+  "countries": [
+    "China",
+    "Nepal"
+  ],
+  "continent": "Asia"
+}
+```
+但是我们只用到了其中的`title`和`description`字段，所以我们可以通过`$fetch`或`pick`选项的结果来选择需要的字段。
+```vue
+<script setup>
+const { data } = await useFetch('/api/getData', { pick: ['title', 'description'] })
+</script>
+
+<template>
+  <h1>{{ data.title }}</h1>
+  <p>{{ data.description }}</p>
+</template>
+```
+
+### Promise.all处理多个请求
+```vue
+<script>
+export default defineComponent({
+  async setup() {
+    const [{ data: organization }, { data: repos }] = await Promise.all([
+      useFetch(`https://api.github.com/orgs/nuxt`),
+      useFetch(`https://api.github.com/orgs/nuxt/repos`)
+    ])
+    return {
+      organization,
+      repos
+    }
+  }
+})
+</script>
+
+<template>
+  <header>
+    <h1>{{ organization.login }}</h1>
+    <p>{{ organization.description }}</p>
+  </header>
+</template>
+```
+
+
 ## 状态管理
 `Nuxt`提供了`useState`，可以跨组件创建响应性的、对`SSR`友好的共享状态。
 
@@ -609,9 +784,106 @@ const color = useColor() // 和 useState('color') 作用一样
 - 服务器和客户端启动错误(`SSR` + `SPA`)
 
 ### `Vue`渲染生命周期中的错误(`SSR` + `SPA`) 
-我们可以使用`onErrorCaptured`来处理异常
-
-
-### `API`或`Nitro`服务器生命周期中的错误 
+- 使用`onErrorCaptured`生命周期钩子函数来处理异常
+- 使用`vue:error`钩子函数处理
+- 使用全局处理器`vueApp.config.errorHandler`处理
+```javascript
+export default defineNuxtPlugin((nuxtApp) => {
+  nuxtApp.vueApp.config.errorHandler = (error, context) => {
+    // ...
+  }
+})
+```
 
 ### 服务器和客户端启动错误(`SSR` + `SPA`)
+如果在启动`Nuxt`应用时出现任何错误，`Nuxt`将调用`app:error`钩子。
+
+启动`Nuxt`的过程如下：
+- 运行`Nuxt`插件
+- 执行`app:created`和`app:beforeMount`钩子
+- 挂载应用是(在客户端)，你应该用`onErrorCapturing`或`vue:error`来处理这种情况
+- 执行`app:mounted`的钩子
+
+### `API`或`Nitro`服务器生命周期中的错误 
+目前不能为这些错误定义服务器端处理程序，但可以呈现错误页面
+
+### 错误页面
+当`Nuxt`遇到致命错误时，无论是在服务器生命周期中，还是在渲染`Vue`应用程序(SSR和SPA)时，它都会渲染一个JSON响应(如果使用`Accept: application/json`报头请求)或一个`HTML`错误页面。
+
+我们可以通过添加`~/error`自定义这个错误页面。`Vue`在应用的根目录中，与`app.vue`一起。这个页面有唯一一个传入属性`error`，待处理的错误信息。
+
+当我们准备清除错误页面时，您可以调用`clearError`函数，它接受一个可选的路径参数来重定向到其他页面。
+
+!> 确保在使用任何依赖于`Nuxt`插件的东西之前进行检查，比如`$route`或`useRouter`，因为如果一个插件抛出了一个错误，那么它将不会重新运行，直到你清除了错误。
+
+假如自定义`error.vue`页面如下
+```vue
+<template>
+  <button @click="handleError">Clear errors</button>
+</template>
+<script setup>
+const props = defineProps({
+  error: Object
+})
+const handleError = () => clearError({ redirect: '/' })
+</script>
+```
+
+### 处理错误的方法
+#### useError
+`function useError (): Ref<Error | { url, statusCode, statusMessage, message, description, data }>`
+
+`useError`函数返回待处理的全局`Nuxt`错误。
+
+#### createError
+`function createError (err: { cause, data, message, name, stack, statusCode, statusMessage, fatal }): Error`
+
+我们可以使用`createError`函数创建带有附加元数据的错误对象。它可以在应用的Vue和Nitro中使用，并会被抛出。
+
+如果抛出使用`createError`创建的错误:
+- 在服务器端，它将触发一个全屏错误页面，你可以用`clearError`清除
+- 在客户端，它将抛出一个非致命错误供您处理。如果你需要触发一个全屏错误页面，那么你可以通过设置`fatal: true`来实现。
+
+```vue
+<script setup>
+const route = useRoute()
+const { data } = await useFetch(`/api/getUser/${route.params.slug}`)
+if (!data.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Page Not Found' })
+}
+</script>
+```
+
+#### showError
+`function showError (err: string | Error | { statusCode, statusMessage }): Error`
+
+我们可以在客户端的任何位置调用此函数，或者(在服务器端)直接在中间件、插件或setup()函数中调用此函数。它将触发一个全屏错误页面，您可以使用`clearError`清除该页面。
+
+建议改用`throw createError()`。
+
+#### clearError
+`function clearError (options?: { redirect?: string }): Promise<void>`
+
+`clearError`函数将清除当前处理的`Nuxt`错误。它接受一个可选的路径参数来重定向到其他页面。
+
+### `NuxtErrorBoundary`组件
+Nuxt提供了`NuxtErrorBoundary`组件，可以让我们在应用内处理客户端的错误（组件），而不需要使用一个错误页面来处理（路由页面）。
+
+`NuxtErrorBoundary`组件可以阻止错误继续向上传递。
+
+我们可以使用插槽(`#error`)的方式自定义我们要展示的错误信息内容，`#error` 插槽接收一个`error`参数，我们可以使用`error = null`清除错误
+
+```vue
+<template>
+  <NuxtErrorBoundary @error="someErrorLogger">
+    <template #error="{ error }">
+      错误信息
+      <button @click="error = null">
+        清除错误
+      </button>
+    </template>
+  </NuxtErrorBoundary>
+</template>
+```
+
+?>  如果您导航到另一个路由，错误将自动清除。
