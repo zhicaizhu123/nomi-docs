@@ -1,8 +1,8 @@
-# SCSS/LES/CSS规范
+# SCSS/LESS/CSS规范
 
 ## charset
 
-【推荐】样式文件写上 @charset 规则，并且一定要在样式文件的第一行首个字符位置开始写，编码名用 “**UTF-8**”
+【推荐】样式文件写上 `@charset` 规则，并且一定要在样式文件的第一行首个字符位置开始写，编码名用 “**UTF-8**”
 
 ```css
 @charset "UTF-8";
@@ -11,7 +11,7 @@
 
 ## BEM 命名规范
 
-【推荐】BEM 的名称来源于该方法学的三个组成部分的英文首字母，分别是块（Block）、元素（Element）和修饰符（Modifier）。关于CSS BEM 可以查看[官方文档](https://en.bem.info/methodology/css/)
+【推荐】BEM 的名称来源于该方法学的三个组成部分的英文首字母，分别是块（Block）、元素（Element）和修饰符（Modifier）。关于`CSS BEM` 可以查看[官方文档](https://en.bem.info/methodology/css/)
 
 格式：`block-name__element-name--modifier`
 
@@ -32,7 +32,7 @@ HTML：
 </form>
 ```
 
-Less样式：
+SCSS/LESS样式：
 
 ```css
 .search-form {
@@ -56,15 +56,15 @@ Less样式：
 
 【强制】左括号与类名之间一个空格，冒号与属性值之间一个空格
 
-【强制】css属性值需要用到引号时，统一使用单引号
+【强制】`css`属性值需要用到引号时，统一使用单引号
 
-【推荐】为单个css选择器或新申明开启新行
+【推荐】为单个`css`选择器或新申明开启新行
 
 【推荐】属性值十六进制数值能用简写的尽量用简写
 
-【推荐】颜色值 rgb() rgba() hsl() hsla() rect() 取值不要带有不必要的 0
+【推荐】颜色值 `rgb()` `rgba()` `hsl()` `hsla()` `rect()` 取值不要带有不必要的 `0`
 
-【推荐】不要为 0 指明单位
+【推荐】不要为 `0` 指明单位
 
 反例：
 

@@ -1,1 +1,1 @@
-# webpack-base
+# 基础配置
