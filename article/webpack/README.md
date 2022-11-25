@@ -312,7 +312,12 @@ module.exports = {
 ### ESLint
 使用 ESLint 关键是设置 ESLint 配置文件，在配置文件里面配置各种 rules 规则，将来运行 ESLint 时就这些规则检测代码规范。
 
-#### 配置文件
+安装依赖：
+```bash
+yarn add -D eslint @babel/eslint-parser eslint-webpack-plugin
+```
+
+配置文件：
 - 在项目根目录新建配置文件。
 - 文件格式：`.eslitrc` 或 `.eslintrc.js` 或 `.eslintrc.json`
 
@@ -332,8 +337,9 @@ module.exports = {
 }
 ```
 
-1. `parserOptions` 解析选项
+1. `parser`和`parserOptions` 解析选项
   ```javascript
+  parser: "@babel/eslint-parser", 
   parserOptions: {
       ecmaVersion: 8, // ES 语法版本
       sourceType: 'module', // ES 模块化
@@ -459,13 +465,12 @@ yarn add -D html-webpack-plugin
 - 在 `Webpack` 配置文件引入插件
 ```javascript
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-
+    
 module.exports = {
     plugins: [
-     new HtmlWebpackPlugin({
-       template: resolve(__dirname, 'public/index.html')
-     }),
-     // ...
+        new HtmlWebpackPlugin({
+          template: resolve(__dirname, 'public/index.html')
+        }),
     ]
 }
 ```
@@ -847,5 +852,137 @@ module.exports = {
 
 ## 优化代码运行性能
 ### Code Split 代码分割
+打包代码时会将所有 js 代码都打包到一个文件中，体积太大了，如果需要渲染首页，就要加载首页的 js 文件，其他文件不应该加载。
+
+所以我们需要将打包生成的文件进行切割，生成多个小的 js 文件，渲染哪个页面就加载对应的 js 文件，这样每次加载的资源少了，访问页面的速度自然就变快了。
+
+代码分割主要完成下面工作：
+- 分割文件：将打包生成的文件进行切割，生成多个 js 文件
+- 按需加载：需要哪个文件加载哪个文件
+
+配置：
+```javascript
+module.exports = {
+    optimization: {
+        splitChunks: {
+            chunks: 'all', // 对所有模块都进行分割
+            // 以下为默认配置
+            // chunks: 'async', // 需分割的模块
+            // minSize: 20000, // 代码分割最小的大小
+            // minRemainingSize: 0, // 类似minSize，最后确保提出的文件大小不能为0
+            // minChunks: 1, // 至少被引用的次数，满足条件才会被分割
+            // maxAsyncRequests: 30, // 按需加载时并行加载的文件最大数量
+            // maxInitialRequests: 30, // 入口js 文件最大并行数量
+            // enforceSizeThreshold: 50000, // 超过500kb一定要单独打包
+            // cacheGroups: {
+            //   defaultVendors: {
+            //     test: /[\\/]node_modules[\\/]/,
+            //     priority: -10, // 权重，越大越高
+            //     reuseExistingChunk: true, // 如果当前chunk包含已从主 bundle 中拆分出的模块，则它将被重用，而不是重新生成新的模块
+            //   },
+            //   default: {
+            //     minChunks: 2, // 这里的minChunks权重最高
+            //     priority: -20,
+            //     reuseExistingChunk: true,
+            //   },
+            // },
+        }
+    }
+}
+```
+
+如果希望自定义chunk的名称，可以使用魔法注释 `webpackChunkName` 来指定：
+```javascript
+document.addEventListener('click', () => {
+  import(/* webpackChunkName: "count" */'./count').then(res => {
+    console.log(res.count());
+  });
+});
+```
+同时需要配置 `webpack.config.js` ：
+```javascript
+module.exports = {
+  // 输出
+  output: {
+    // chunk的名称
+    chunkFilename: 'js/[name].[chunkhash:8].chunk.js',
+  }
+}
+```
+那么打包后的文件就是我们配置`chunkFilename`规则格式决定。
 
 ### Preload 和 Prefetch
+我们已经做了代码分割，同时实现了按需加载，但是速度上还是不能带到我们的预期，比如，点击按钮才加载资源，如果这个资源体积很大，那么用户就会感觉卡顿。
+
+如果想在浏览器空闲的时间，加载后续需要使用的资源，我们可以使用 `Preload` 和 `Prefetch` 技术。
+
+- `Preload`：告诉浏览器立即加载资源。
+- `Prefetch`：告诉浏览器在空闲时才加载资源。
+
+共同点：
+- 只加载资源，但不执行。
+- 都有缓存。
+
+区别：
+- `Preload` 加载优先级高，`Prefetch` 加载优先级低。
+- `Preload` 只能加载当前页面需要使用的资源，`Prefetch` 可以加载当前页面资源，也可以加载下一个页面需要使用的资源。
+
+总结：
+- 当前页面优先级高的资源用 `Preload` 加载。
+- 下一个页面需要使用的资源使用 `Prefetch` 加载。
+
+安装依赖：
+```bash
+yarn add -D @vue/preload-webpack-plugin
+```
+
+### Network Cache 缓存
+- 对打包资源使用 `contenthash`
+- 配置 `runtimeChunk`
+
+配置：
+```javascript
+module.exports = {
+  // 输出
+  output: {
+    // 文件输出名称
+    filename: 'js/[name].[chunkhash:8].js',
+    // chunk的名称
+    chunkFilename: 'js/[name].chunk.[contenthash:8].js',
+    // 静态资源打包路径
+    assetModuleFilename: 'assets/[name].[contenthash:8][ext][query]',
+  },
+    
+  optimization: {
+    runtimeChunk: {
+      name: (entrypoint) => `runtime.${entrypoint.name}`
+    }
+  }
+}
+
+```
+
+### 解决js兼容性问题 core-js
+我们使用babel 对 js 进行兼容性处理，其实使用 @babel/preset-env 智能预设来处理兼容性问题。
+
+它将ES6的一些语法进行编译转化，比如箭头函数，但是如果是ES6+以上的语法，例如async/await, Promise,  includes等，它是没有办法处理的。
+
+所以这个时候我们的 js 代码还是存在兼容性问题。
+
+`core-js` 是专门用来做 ES6 及以上的API的兼容。
+
+
+安装依赖
+```bash
+yarn add -D core-js
+```
+
+配置 `babel.config.js`
+```javascript
+module.exports = {
+  plugins: ['@babel/plugin-transform-runtime'],
+  presets: [
+    ['@babel/preset-env', { useBuiltIns: 'usage', corejs: 3 }]
+  ],
+};
+```
