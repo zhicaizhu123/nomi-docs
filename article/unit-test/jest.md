@@ -9,22 +9,22 @@
 ## 断言
 ```javascript
 test('test common matcher', () => {
-  expect(2 + 2).toBe(4);
-  expect(2 + 2).not.toBe(5);
+    expect(2 + 2).toBe(4);
+    expect(2 + 2).not.toBe(5);
 })
 
 test('test to be true or false', () => {
-  expect(1).toBeTruthy()
-  expect(0).toBeFalsy()
+    expect(1).toBeTruthy()
+    expect(0).toBeFalsy()
 })
 
 test('test number', () => {
-  expect(4).toBeGreaterThan(3)
-  expect(2).toBeLessThan(3)
+    expect(4).toBeGreaterThan(3)
+    expect(2).toBeLessThan(3)
 })
 
 test('test object', () => {
-  expect({ name: 'Nomi' }).toEqual({ name: 'Nomi' })
+    expect({ name: 'Nomi' }).toEqual({ name: 'Nomi' })
 })
 ```
 
@@ -32,17 +32,17 @@ test('test object', () => {
 ### 回调方式
 ```javascript
 const fetchUser = (cb) => {
-  setTimeout(() => {
-    cb('nomi')
-  })
+    setTimeout(() => {
+          cb('nomi')
+    })
 }
 
 it('test callback', (done) => {
-  fetchUser((data) => {
-    expect(data).toBe('nomi')
-    expect(data).not.toBe('hello')
-    done()
-  })
+    fetchUser((data) => {
+      expect(data).toBe('nomi')
+      expect(data).not.toBe('hello')
+      done()
+    })
 })
 ```
 其中 `done` 是告诉 `jest` 单元测试已经完成。
@@ -51,9 +51,9 @@ it('test callback', (done) => {
 ```javascript
 const userPromise = () => Promise.resolve({ username: 'nomi' })
 it('test promise', () => {
-  return userPromise().then(data => {
-    expect(data).toEqual({ username: 'nomi' })
-  })
+    return userPromise().then(data => {
+      expect(data).toEqual({ username: 'nomi' })
+    })
 })
 ```
 ⚠️注意：需要返回一个 `Promise` 对象
@@ -62,8 +62,8 @@ it('test promise', () => {
 ```javascript
 const userPromise = () => Promise.resolve({ username: 'nomi' })
 it('test promise', async () => {
-  const data = await userPromise()
-  expect(data).toEqual({ username: 'nomi' })
+    const data = await userPromise()
+    expect(data).toEqual({ username: 'nomi' })
 })
 ```
 
@@ -72,13 +72,13 @@ it('test promise', async () => {
 ```javascript
 const userPromise = () => Promise.resolve({ username: 'nomi' })
 it('test promise', async () => {
-  return expect(userPromise()).resolves.toEqual({ username: 'nomi' })
+    return expect(userPromise()).resolves.toEqual({ username: 'nomi' })
 })
 
 
 const userPromise2 = () => Promise.reject('error')
 it('test promise', async () => {
-  return expect(userPromise2()).rejects.toEqual('error')
+    return expect(userPromise2()).rejects.toEqual('error')
 })
 ```
 resolves： 为决策结果，rejects：为异常结果。
@@ -98,29 +98,32 @@ Mock 两大功能
 
 ### 创建mock function
 > 使用`jest.fn()`创建mock function
+
 - 默认参数
+
 ```javascript
 function mockTest(shouldCall, cb) {
-  shouldCall && cb('nomi')
+    shouldCall && cb('nomi')
 }
 
 it('test with mock function', () => {
-  const mockCb = jest.fn()
-  mockTest(true, mockCb)
-  expect(mockCb).toHaveBeenCalled()
-  expect(mockCb).toHaveBeenCalledWith('nomi')
-  expect(mockCb).toBeCalledTimes(1)
+    const mockCb = jest.fn()
+    mockTest(true, mockCb)
+    expect(mockCb).toHaveBeenCalled()
+    expect(mockCb).toHaveBeenCalledWith('nomi')
+    expect(mockCb).toBeCalledTimes(1)
 })
 ```
 
 - 自定义参数
+
 ```javascript
 it('test mock with implementation', () => {
-  const mockCb = jest.fn(x => 'hello ' + x)
-  mockTest(true, mockCb)
-  expect(mockCb).toHaveBeenCalled()
-  expect(mockCb).toBeCalledTimes(1)
-  console.log(mockCb.mock.results)
+    const mockCb = jest.fn(x => 'hello ' + x)
+    mockTest(true, mockCb)
+    expect(mockCb).toHaveBeenCalled()
+    expect(mockCb).toBeCalledTimes(1)
+    console.log(mockCb.mock.results)
 })
 ```
 
@@ -143,15 +146,15 @@ jest.mock('axios')
 axios.get.mockResolvedValue({ data: { username: 'nomi' } })
 // 获取用户信息
 function getUserName(id) {
-  return axios.get(`https://jsonplaceholder.typicode.com/users/${id}`).then((res) => {
-    return res.data.username
-  })
+    return axios.get(`https://jsonplaceholder.typicode.com/users/${id}`).then((res) => {
+      return res.data.username
+    })
 }
 
 it('test with mock modules', () => {
-  return getUserName(1).then(name => {
-    console.log(name)
-  })
+    return getUserName(1).then(name => {
+      console.log(name)
+    })
 })
 ```
 jest mock 提供了一系列的方法：
@@ -168,7 +171,7 @@ jest mock 提供了一系列的方法：
 以下模拟一下axios get方法
 ```javascript
 const axios = {
-  get: jest.fn(() => Promise.resolve({ data: {  username: 'nomi' } })),
+    get: jest.fn(() => Promise.resolve({ data: {  username: 'nomi' } })),
 }
 
 module.exports = axios
@@ -177,9 +180,9 @@ module.exports = axios
 ```javascript
 // 获取用户信息
 function getUserName(id) {
-  return axios.get(`https://jsonplaceholder.typicode.com/users/${id}`).then((res) => {
-    return res.data.username
-  })
+    return axios.get(`https://jsonplaceholder.typicode.com/users/${id}`).then((res) => {
+      return res.data.username
+    })
 }
 
 it('test with mock modules', () => {
@@ -216,13 +219,13 @@ const fetchUser = (cb) => {
   }, 1000)
 }
 it('test runOnlyPendingTimers', () => {
-  const callback = jest.fn()
-  fetchUser(callback)
-  expect(callback).not.toHaveBeenCalled()
-  expect(callback).toHaveBeenCalledTimes(0)
-  jest.runOnlyPendingTimers()
-  expect(callback).toHaveBeenCalled()
-  expect(callback).toHaveBeenCalledTimes(1)
+    const callback = jest.fn()
+    fetchUser(callback)
+    expect(callback).not.toHaveBeenCalled()
+    expect(callback).toHaveBeenCalledTimes(0)
+    jest.runOnlyPendingTimers()
+    expect(callback).toHaveBeenCalled()
+    expect(callback).toHaveBeenCalledTimes(1)
 })
 ```
 
@@ -230,16 +233,16 @@ it('test runOnlyPendingTimers', () => {
 > 一步步执行定时器
 ```javascript
 it('test runOnlyPendingTimers', () => {
-  const callback = jest.fn()
-  fetchUser2(callback)
-  expect(callback).not.toHaveBeenCalled()
-  expect(callback).toHaveBeenCalledTimes(0)
-  jest.runOnlyPendingTimers()
-  expect(callback).toHaveBeenCalledWith('nomi 1')
-  expect(callback).toHaveBeenCalledTimes(1)
-  jest.runOnlyPendingTimers()
-  expect(callback).toHaveBeenCalledWith('nomi 2')
-  expect(callback).toHaveBeenCalledTimes(2)
+    const callback = jest.fn()
+    fetchUser2(callback)
+    expect(callback).not.toHaveBeenCalled()
+    expect(callback).toHaveBeenCalledTimes(0)
+    jest.runOnlyPendingTimers()
+    expect(callback).toHaveBeenCalledWith('nomi 1')
+    expect(callback).toHaveBeenCalledTimes(1)
+    jest.runOnlyPendingTimers()
+    expect(callback).toHaveBeenCalledWith('nomi 2')
+    expect(callback).toHaveBeenCalledTimes(2)
 })
 ```
 
@@ -247,18 +250,18 @@ it('test runOnlyPendingTimers', () => {
 > 自定义前进的时间
 ```javascript
 it('test advanceTimersByTime', () => {
-  const callback = jest.fn()
-  fetchUser2(callback)
-  expect(callback).not.toHaveBeenCalled()
-  expect(callback).toHaveBeenCalledTimes(0)
-  jest.advanceTimersByTime(500)
-  jest.advanceTimersByTime(500)
-  expect(callback).toHaveBeenCalledWith('nomi 1')
-  expect(callback).toHaveBeenCalledTimes(1)
-  jest.advanceTimersByTime(800)
-    jest.advanceTimersByTime(200)
-  expect(callback).toHaveBeenCalledWith('nomi 2')
-  expect(callback).toHaveBeenCalledTimes(2)
+    const callback = jest.fn()
+    fetchUser2(callback)
+    expect(callback).not.toHaveBeenCalled()
+    expect(callback).toHaveBeenCalledTimes(0)
+    jest.advanceTimersByTime(500)
+    jest.advanceTimersByTime(500)
+    expect(callback).toHaveBeenCalledWith('nomi 1')
+    expect(callback).toHaveBeenCalledTimes(1)
+    jest.advanceTimersByTime(800)
+      jest.advanceTimersByTime(200)
+    expect(callback).toHaveBeenCalledWith('nomi 2')
+    expect(callback).toHaveBeenCalledTimes(2)
 })
 ```
 
