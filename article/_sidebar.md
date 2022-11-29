@@ -1,13 +1,14 @@
-- ES6+
+<!-- vue相关 -->
+- [Vue](/article/vue/README.md)
 
-- CSS3
+<!-- 服务端渲染 -->
+- [Nuxt](/article/ssr/README.md)
+  - [基础篇](/article/ssr/basic/README.md)
+  - [高级篇](/article/ssr/advance/README.md)
+  - [实战篇](/article/ssr/project/README.md)
 
-<!-- nomi多包库 -->
-- 工具
-  - [utils](/article/utils/README.md)
-  - [route-guard](/article/route-guard/README.md)
-  - [emoji](/article/emoji/README.md)
-  - [upload](/article/upload/README.md)
+- [单元测试](/article/unit-test/README.md)
+  - [Jest](/article/unit-test/jest.md)
 
 <!-- webpack相关 -->
 - 打包构建
@@ -24,15 +25,6 @@
 
 <!-- typescript相关 -->
 - [Typescript](/article/typescript/README.md)
-
-<!-- vue相关 -->
-- [Vue](/article/vue/README.md)
-
-<!-- 服务端渲染 -->
-- [Nuxt](/article/ssr/README.md)
-  - [基础篇](/article/ssr/basic/README.md)
-  - [高级篇](/article/ssr/advance/README.md)
-  - [实战篇](/article/ssr/project/README.md)
 
 <!-- chrome相关 -->
 - [Chrome插件](/article/chrome/README.md)
