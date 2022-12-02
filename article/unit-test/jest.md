@@ -106,7 +106,7 @@ function mockTest(shouldCall, cb) {
     shouldCall && cb('nomi')
 }
 
-it('test with mock function', () => {
+it('test with mock function', () => { 
     const mockCb = jest.fn()
     mockTest(true, mockCb)
     expect(mockCb).toHaveBeenCalled()
