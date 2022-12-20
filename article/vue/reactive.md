@@ -143,11 +143,11 @@ effect(function effectFn() {
 })
 ```
 这里有三个角色
-- 被操作（读取）的代理对象 obj
-- 被操作（读取）的字段名 text
-- 使用 effect 函数注册的副作用函数 effectFn
+- 被操作（读取）的代理对象 `obj`
+- 被操作（读取）的字段名 `text`
+- 使用 `effect` 函数注册的副作用函数 `effectFn`
 
-如果用 target 来表示一个代理对象所代理的原始对象，用 key 表示被操作的字段名，用 effectFn 表示被注册的副作用函数，那么可以为这三个角色建立以下关系
+如果用 `target` 来表示一个代理对象所代理的原始对象，用 `key` 表示被操作的字段名，用 `effectFn` 表示被注册的副作用函数，那么可以为这三个角色建立以下关系
 ```
 target
   ⎿ key
@@ -155,7 +155,7 @@ target
 ```
 这是一个属性结构。
 
-我们使用代码来实现这个新的桶，首先我们需要使用 WeakMap 代替 Set 作为桶的数据结构
+我们使用代码来实现这个新的桶，首先我们需要使用 `WeakMap` 代替 `Set` 作为桶的数据结构
 ```javascript
 // 存储副作用函数的桶
 const bucket = new WeakMap()
