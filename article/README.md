@@ -1,37 +1,32 @@
-## 组件库
-> TODO: 待更新...
+<!-- vue相关 -->
+## [Vue](/article/vue/README.md)
+- [Vue3设计思路](/article/vue/renderer.md)
+- [响应式数据的作用和实现](/article/vue/reactive.md)
+- [Composition API](/article/vue/composition-api.md)
+- [script setup](/article/vue/script-setup.md)
 
 ## 打包构建
 <!-- webpack相关 -->
-### [webpack](/article/webpack/README.md)
+- [webpack](/article/webpack/README.md)
 > TODO: 待更新...
 
 <!-- rollup相关 -->
-### [rollup](/article/rollup/README.md)
+- [rollup](/article/rollup/README.md)
 > TODO: 待更新...
 > 
 <!-- vite相关 -->
-## [vite](/article/vite/README.md)
+- [vite](/article/vite/README.md)
 > TODO: 待更新...
 
 ## 包管理
 <!-- lerna -->
-### [lerna](/article/lerna/README.md)
+- [lerna](/article/lerna/README.md)
 > TODO: 待更新...
 
 <!-- pnpm相关 -->
-### [pnpm](/article/pnpm/README.md)
+- [pnpm](/article/pnpm/README.md)
 > TODO: 待更新...
 
-## ES6/7/8
-
-<!-- typescript相关 -->
-## [Typescript](/article/typescript/README.md)
-> TODO: 待更新...
-
-<!-- vue相关 -->
-## [Vue](/article/vue/README.md)
-> TODO: 待更新...
 
 ## [Nuxt](/article/ssr/README.md)
 - [基础篇](/article/ssr/basic/README.md)
