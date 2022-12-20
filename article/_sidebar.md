@@ -1,5 +1,9 @@
 <!-- vue相关 -->
-- [Vue](/article/vue/README.md)
+- [Vue3](/article/vue/README.md)
+  - [设计思路](/article/vue/renderer.md)
+  - [响应式数据的作用和实现](/article/vue/reactive.md)
+  - [Composition API](/article/vue/composition-api.md)
+  - [script setup](/article/vue/script-setup.md)
 
 <!-- 服务端渲染 -->
 - [Nuxt](/article/ssr/README.md)
