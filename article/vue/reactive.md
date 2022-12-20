@@ -30,10 +30,10 @@ effect() {
 ```javascript
 // 存储副作用函数的桶
 const bucket = new Set()
-
+    
 // 原始数据
 const data = { text: 'hello vue' }
-
+    
 // 对原始数据的代理
 const obj = new Proxy(data, {
   get(target, key) {
@@ -49,19 +49,21 @@ const obj = new Proxy(data, {
     return true
   }
 })
-
+    
 function effect() {
   document.body.innerText = obj.text
 }
-
+    
 // 执行副作用触发读取操作
 effect()
-
+    
 setTimeout(() => {
   // 修改响应式数据
   obj.text = 'hello nomi'
 }, 5000)
 ```
+
+具体实现步骤如下：
 - 先创建一个存储副作用函数的桶 `bucket`;
 - `obj` 对原始数据 `data` 进行代理，分别对读取和设置操作进行拦截；
-- 读取时将副作用函数添加到 bucket 中，设置时将副作用函数从 bucket 取出并执行； 
+- 读取时将副作用函数添加到 `bucket` 中，设置时将副作用函数从 `bucket` 取出并执行； 
