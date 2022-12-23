@@ -86,20 +86,20 @@ function effect(fn) {
 ```javascript
 // 对原始数据的代理
 const obj = new Proxy(data, {
-  get(target, key) {
-    // 将 activeEffect 存储的副作用函数添加到桶里
-    if (activeEffect) {
-      bucket.add(activeEffect)
+    get(target, key) {
+      // 将 activeEffect 存储的副作用函数添加到桶里
+      if (activeEffect) {
+        bucket.add(activeEffect)
+      }
+      return target[key]
+    },
+  
+    set(target, key, value) {
+      target[key] = value
+      // 设置操作时将副作用取出并执行
+      bucket.forEach(effect => effect())
+      return true
     }
-    return target[key]
-  },
-
-  set(target, key, value) {
-    target[key] = value
-    // 设置操作时将副作用取出并执行
-    bucket.forEach(effect => effect())
-    return true
-  }
 })
 ```
 
@@ -113,8 +113,8 @@ effect(() => {
 5秒后这个 `obj.text`
 ```javascript
 setTimeout(() => {
-  // 修改响应式数据
-  obj.text = 'hello nomi'
+    // 修改响应式数据
+    obj.text = 'hello nomi'
 }, 5000)
 ```
 
@@ -168,7 +168,73 @@ const bucket = new WeakMap()
     
 // 对原始数据的代理
 const obj = new Proxy(data, {
-  get(target, key) {
+    get(target, key) {
+      // 将 activeEffect 存储的副作用函数添加到桶里
+      if (!activeEffect) return
+      // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
+      let depsMap = bucket.get(target)
+      // 如果不存在depsMap，那么新建一个 Map 并与 target 关联
+      if (!depsMap) {
+        bucket.set(target, (depsMap = new Map()))
+      }    
+      // 根据 key 从桶中取出 deps, 它是一个 Set 类型
+      // 里面存储所有与当前 key 相关联的副作用函数
+      let deps = depsMap.get(key)
+      // 如果不存在deps，那么新建一个 Set 并与 key 关联
+      if (!deps) {
+        depsMap.set(key, (deps = new Set()))
+      }
+      // 将当前激活的副作用函数存储到桶
+      deps.add(activeEffect)
+      return target[key]
+    },
+      
+    set(target, key, value) {
+      target[key] = value
+      // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
+      const depsMap = bucket.get(target)
+      if (!depsMap) return
+      // 根据 key 从桶中取出 deps, 它是一个 Set 类型
+      const effects = depsMap.get(key)
+      if (!effects) return
+      effects.forEach(effect => effect())
+      // 设置操作时将副作用取出并执行
+      return true
+    }
+})
+```
+从上面代码我们可以看到，我们分别使用了`WeakMap`、 `Map`、 `Set` 三个数据结构
+- `WeakMap` 由 target -> Map 构成；
+- `Map` 由 key -> Set 构成。
+
+经过上面的改造，之前问题就解决了。
+
+我们对代码做下封装，我们把 `get` 拦截函数里把副作用函数收集到桶的逻辑单独封装到一个 `track` 函数中，把触发副作用函数重新执行的逻辑封装到 `trigger` 函数中。
+``` javascript
+// 存储副作用函数的桶
+const bucket = new WeakMap()
+    
+// 原始数据
+const data = { text: 'hello vue' }
+      
+// 对原始数据的代理
+const obj = new Proxy(data, {
+    get(target, key) {
+      // 将 activeEffect 存储的副作用函数添加到桶里
+      track(target, key)
+      return target[key]
+    },
+  
+    set(target, key, value) {
+      target[key] = value
+      // 把副作用从桶取出并执行
+      trigger(target, key)
+      return true
+    }
+})
+    
+// 在 get 拦截函数内调用 track 函数追踪变化
+function track(target, key) {
     // 将 activeEffect 存储的副作用函数添加到桶里
     if (!activeEffect) return
     // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
@@ -186,85 +252,228 @@ const obj = new Proxy(data, {
     }
     // 将当前激活的副作用函数存储到桶
     deps.add(activeEffect)
-    return target[key]
-  },
+}
     
-  set(target, key, value) {
-    target[key] = value
+// 在 set 拦截函数内调用 trigger 函数触发改变
+function trigger(target, key) {
     // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
     const depsMap = bucket.get(target)
     if (!depsMap) return
     // 根据 key 从桶中取出 deps, 它是一个 Set 类型
     const effects = depsMap.get(key)
     if (!effects) return
-    effects.forEach(effect => effect())
     // 设置操作时将副作用取出并执行
-    return true
-  }
+    effects.forEach(effect => effect())
+}
+```
+把逻辑封装到 `track` 和 `trigger` 中，能为我们带来极大的便利性。
+
+## 分支切换和cleanup
+观察以下的代码
+```javascript
+effect(() => {
+    document.body.innerText = obj.ok ? obj.text : 'nomi'
 })
 ```
-从上面代码我们可以看到，我们分别使用了`WeakMap`、 `Map`、 `Set` 三个数据结构
-- `WeakMap` 由 target -> Map 构成；
-- `Map` 由 key -> Set 构成。
+当 `obj.ok` 设置为 `false` 后，副作用函数重新执行，`obj.text` 都不会被读取，所以理想状态下，副作用函数不应该被 `obj.text` 所对应的依赖集合收集。
 
-经过上面的改造，之前问题就解决了。
+按照之前的实现，我们即使把 `obj.ok` 设置为 `false` 并触发副作用函数重新执行后，`obj.text` 就不会再被读取， 但是后面我们修改 `obj.text` 时，副作用函数还是会被重新执行，因为 `obj.text` 关联的副作用函数还是存在，这是我们不需要看到的。
 
-我们对代码做下封装，我们把 `get` 拦截函数里把副作用函数收集到桶的逻辑单独封装到一个 `track` 函数中，把触发副作用函数重新执行的逻辑封装到 `trigger` 函数中。
-``` javascript
-// 存储副作用函数的桶
-const bucket = new WeakMap()
+解决思路也很简单，在每次副作用执行前，可以先把它从所有与之关联的依赖集合中删除。在副作用执行完毕后，会重新建立联系，但是在新的联系中不会包含遗留的副作用函数了。
 
-// 原始数据
-const data = { text: 'hello vue' }
-    
-// 对原始数据的代理
-const obj = new Proxy(data, {
-  get(target, key) {
-    // 将 activeEffect 存储的副作用函数添加到桶里
-    track(target, key)
-    return target[key]
-  },
+我们改造下注册副作用函数的函数 `effect`
+```javascript
+function effect(fn) {
+    const effectFn = () => {
+      // fn赋值给activeEffect
+      activeEffect = effectFn
+      // 执行副作用函数
+      fn()
+    }
+    // 用来存储所有与该副作用函数相关联的集合
+    effectFn.deps = []
+      // 执行副作用函数
+    effectFn()
+}
+```
+在 `effect` 内部我们定义了新的 `effectFn` 函数，并为其添加 `effectFn.deps` 属性，用来存储所有包含当前副作用的函数的依赖集合。
 
-  set(target, key, value) {
-    target[key] = value
-    // 把副作用从桶取出并执行
-    trigger(target, key)
-    return true
-  }
-})
-    
-// 在 get 拦截函数内调用 track 函数追踪变化
+那么 `effectFn.deps` 中的依赖集合是如何收集的？我们改造下 `track` 函数
+```javascript
 function track(target, key) {
-  // 将 activeEffect 存储的副作用函数添加到桶里
-  if (!activeEffect) return
-  // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
-  let depsMap = bucket.get(target)
-  // 如果不存在depsMap，那么新建一个 Map 并与 target 关联
-  if (!depsMap) {
-    bucket.set(target, (depsMap = new Map()))
-  }    
-  // 根据 key 从桶中取出 deps, 它是一个 Set 类型
-  // 里面存储所有与当前 key 相关联的副作用函数
-  let deps = depsMap.get(key)
-  // 如果不存在deps，那么新建一个 Set 并与 key 关联
-  if (!deps) {
-    depsMap.set(key, (deps = new Set()))
-  }
-  // 将当前激活的副作用函数存储到桶
-  deps.add(activeEffect)
-}
-    
-// 在 set 拦截函数内调用 trigger 函数触发改变
-function trigger(targe, key) {
-  target[key] = value
-  // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
-  const depsMap = bucket.get(target)
-  if (!depsMap) return
-  // 根据 key 从桶中取出 deps, 它是一个 Set 类型
-  const effects = depsMap.get(key)
-  if (!effects) return
-  // 设置操作时将副作用取出并执行
-  effects.forEach(effect => effect())
+    // 将 activeEffect 存储的副作用函数添加到桶里
+    if (!activeEffect) return
+    // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
+    let depsMap = bucket.get(target)
+    // 如果不存在depsMap，那么新建一个 Map 并与 target 关联
+    if (!depsMap) {
+      bucket.set(target, (depsMap = new Map()))
+    }    
+    // 根据 key 从桶中取出 deps, 它是一个 Set 类型
+    // 里面存储所有与当前 key 相关联的副作用函数
+    let deps = depsMap.get(key)
+    // 如果不存在deps，那么新建一个 Set 并与 key 关联
+    if (!deps) {
+      depsMap.set(key, (deps = new Set()))
+    }
+    // 将当前激活的副作用函数存储到桶
+    deps.add(activeEffect)
+    // ✅✅ 添加到 activeEffect.deps 数组中
+    activeEffect.deps.push(deps)
 }
 ```
-把逻辑封装到 track 和 trigger 中，能为我们带来极大的便利性。
+
+我们将执行当前的副作用函数 `activeEffect` 添加到依赖集合 `deps，说明` deps 就是一个与当前副作用函数存在联系的依赖集合，所以我们也把它添加到 `activeEffect.deps` 数组中，这样就完成了依赖集合到的收集。 
+
+有了这个联系后，我们就可以在每次执行副作用函数执行时，根据 `effectFn.deps` 获取所有相关联的依赖集合，将副作用函数从依赖集合中移除。
+```javascript
+function effect(fn) {
+    const effectFn = () => {
+      // 完成清除工作
+      cleanup(effectFn)
+      // fn赋值给activeEffect
+      activeEffect = effectFn
+      // 执行副作用函数
+      fn()
+    }
+    // 用来存储所有与该副作用函数相关联的集合
+    effectFn.deps = []
+      // 执行副作用函数
+    effectFn()
+}
+```
+
+`cleanup` 函数实现：
+
+```javascript
+function cleanup(effectFn) {
+    // 遍历 effectFn.deps数组
+    for(let i = 0; i < effectFn.deps.length; i++) {
+      // deps 是依赖集合
+      const deps = effectFn.deps[i]
+      // 将 effectFn 从依赖集合中删除
+      deps.delete(effectFn)
+    }
+    // 最后需要重置 effectFn.deps 数组
+    effectFn.deps.length = 0
+}
+```
+
+改造完成后，我们重新运行代码，发现目前的实现会导致无限循环执行，问题出在 `trigger` 函数中
+```javascript
+function trigger(target, key) {
+    // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    // 根据 key 从桶中取出 deps, 它是一个 Set 类型
+    const effects = depsMap.get(key)
+    if (!effects) return
+    // ⚠️⚠️ 设置操作时将副作用取出并执行
+    effects.forEach(effect => effect())
+}
+```
+`trigger` 内部，我们遍历 `effects` 集合，它是一个 `Set` 集合，当副作用函数执行时，会调用 `cleanup` 进行清除，实际就是从 `effects` 集合中将当前执行的副作用函数剔除，但是副作用函数的执行会导致其重新被收集到集合中，而此时对于 `effects` 集合遍历还在进行中，所以会被重新被访问。
+
+要解决上面的问题也很简单，我们可以构造一个新的 `Set` 集合并遍历它:
+```javascript
+function trigger(target, key) {
+    // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    // 根据 key 从桶中取出 deps, 它是一个 Set 类型
+    const effects = depsMap.get(key)
+    if (!effects) return
+  
+    // ✅✅ 避免无限执行
+    const effectsToRun = new Set(effects)
+    // 设置操作时将副作用取出并执行
+    effectsToRun.forEach(effect => effect())
+}
+```
+其中 `effectsToRun` 就是构建的新的集合，代替之间遍历 `effects` 集合，从而避免了无限执行。
+
+## 嵌套的effect和effect栈
+effect 可以嵌套
+```javascript
+effect(function effectFn1() {
+    effect(function effectFn1() {
+        // ...
+    })
+    // ...
+})
+```
+上面的代码会存在什么问题呢？我们继续思考我们之前 `effect` 的实现
+```javascript
+let activeEffect
+function effect(fn) {
+    const effectFn = () => {
+      // 完成清除工作
+      cleanup(effectFn)
+      // fn赋值给activeEffect
+      activeEffect = effectFn
+      // 执行副作用函数
+      fn()
+    }
+    // 用来存储所有与该副作用函数相关联的集合
+    effectFn.deps = []
+      // 执行副作用函数
+    effectFn()
+}
+```
+`activeEffect` 是一个全局变量，执行一次 `effect` 就会被更新，如果是嵌套的 `effect`执行的话，当执行到内部的 `effect` 时，`activeEffect` 就会被更新，但是此时外层的 `effect` 还没有执行完，`activeEffect` 已更新成内部的副作用函数了。
+
+如何解决上面的问题呢？我们可以是使用一个 **栈结构** 来存储副作用函数。
+```javascript
+// ✅✅effect 栈
+const effectStack = []
+function effect(fn) {
+    const effectFn = () => {
+      cleanup(effectFn)
+        // fn赋值给activeEffect
+      activeEffect = effectFn
+      // ✅✅在调用副作用之前将当前副作用函数压入栈
+      effectStack.push(effectFn)
+      // 执行副作用函数
+      fn()
+      // ✅✅当副作用执行完毕后，将当前副作用函数弹出栈，并把 active Effect 还原为之前的值
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+    }
+    // 用来存储所有与该副作用函数相关联的集合    
+    effectFn.deps = []
+    effectFn()
+}
+```
+其中 `effectStack` 即使我们定义存储副作用函数的栈，当副作用函数执行时，将单前副作用函数压入栈中，待副作用函数执行完毕后将其弹出，并始终让 `activeEffect` 指向栈顶的副作用函数。这样就能做到一个响应式数据只会收集直接读取其值的副作用函数，而不会出现互相影响的情况。
+
+## 避免无限递归循环
+假如我们运行下面的代码，会发现报栈溢出的错误
+```javascript
+effect(() => {
+    obj.count = obj.count + 1
+})
+```
+因为上面的语句中，我们在副作用函数中，既执行了读取操作，也执行了设置操作，读取时触发 track，把当前的副作用收集到桶中，设置时触发 trigger，把桶中的副作用函数取出并执行，但是该副作用函数还正在执行中，就要开始下一次的执行了，这样就导致了无限递归循环调用自己，而从产生栈溢出错误。
+
+解决上面问题也很简单，就是判断读取和设置的操作是在同一个副作用函数中进行的话，trigger 和 track 中执行的副作用函数都是 activeEffect，所以如果 trigger 触发执行副作用函数与当前执行的副作用函数相同时，则不触发执行。这样就可以避免无限递归调用了。
+```javascript
+function trigger(target, key) {
+    // 根据 target 从桶中取出 depsMap, 它是一个 Map 类型
+    const depsMap = bucket.get(target)
+    if (!depsMap) return
+    // 根据 key 从桶中取出 deps, 它是一个 Set 类型
+    const effects = depsMap.get(key)
+    if (!effects) return
+      
+    const effectsToRun = new Set()
+    effects.forEach(effect => {
+      // ✅✅如果trigger 触发执行副作用函数与当前正在执行的副作用函数相同，则不触发执行
+      if (activeEffect !== effect) {
+        effectsToRun.add(effect)
+      }
+    })
+    // 设置操作时将副作用取出并执行
+    effectsToRun.forEach(effect => effect())
+}
+```
+
