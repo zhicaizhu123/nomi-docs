@@ -894,6 +894,7 @@ computed(obj)
          ⎿ effectFn
 ```
 
+## watch 函数
 所谓的 `watch` ，其本质就是观测一个响应式数据，当数据发生变化时通知并执行响应的回调函数。
 ```javascript
 watch(obj, () => {
