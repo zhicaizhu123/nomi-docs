@@ -1,5 +1,12 @@
 > 以下主要为`Vue3`相关的技术内容
 ### [Vue3设计思路](/article/vue/renderer.md)
 ### [响应式数据的作用和实现](/article/vue/reactive.md)
+### [非原始值的响应式方案](/article/vue/non-original-reative.md)
+### [原始值的响应式方案](/article/vue/original-reative.md)
+### [渲染器的设计](/article/vue/renderer-design.md)
+### [挂载和更新](/article/vue/mount-update.md)
+### [简单的Diff算法](/article/vue/simple-diff.md)
+### [双端Diff算法](/article/vue/doubule-diff.md)
+### [快速Diff算法](/article/vue/quick-diff.md)
 ### [Composition API](/article/vue/composition-api.md)
 ### [script setup](/article/vue/script-setup.md)
