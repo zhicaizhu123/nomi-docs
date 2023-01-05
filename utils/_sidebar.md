@@ -1,1 +1,2 @@
 - [nomi-oss-upload](/utils/nomi-oss-upload.md)
+- [nomi-smms-upload](/utils/nomi-smms-upload.md)
