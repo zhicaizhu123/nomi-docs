@@ -65,3 +65,53 @@ class Queue {
   }
 }
 ```
+
+## 击鼓传花游戏
+由于队列经常被应用在计算机领域和我们的现实生活中，就出现了一些队列的修改版本。这其中的一种叫作循环队列。循环队列的一个例子就是击鼓传花游戏（hot potato）。在这个游戏中，孩子们围成一个圆圈，把花尽快地传递给旁边的人。某一时刻传花停止，这个时候花在谁手里，谁就退出圆圈、结束游戏。重复这个过程，直到只剩一个孩子（胜者）。
+
+算法实现如下：
+```javascript
+function hotPotato(elements, num) {
+  const queue = new Queue()
+  const elimitatedList = []
+
+  for(let i = 0; i < elements.length; i++) {
+    queue.enqueue(elements[i])
+  }
+
+  while(queue.size() > 1) {
+    for(let i = 0; i < num; i++) {
+      queue.enqueue(queue.dequeue())
+    }
+    elimitatedList.push(queue.dequeue())
+  }
+
+  return {
+    elimitatedList,
+    winner: queue.dequeue()
+  }
+}
+```
+
+我们可以使用下面的代码来尝试 `hotPotato` 算法：
+```javascript
+const names = ['John', 'Jack', 'Camila', 'Ingrid', 'Carl'];
+const result = hotPotato(names, 7);
+result.eliminated.forEach(name => {
+  console.log(`${name}在击鼓传花游戏中被淘汰。`);
+});
+
+console.log(`胜利者： ${result.winner}`);
+```
+
+结果如下：
+```
+Camila在击鼓传花游戏中被淘汰。
+Jack在击鼓传花游戏中被淘汰。
+Carl在击鼓传花游戏中被淘汰。
+Ingrid在击鼓传花游戏中被淘汰。
+胜利者：John
+```
+
+下图模拟了这个输出过程：
+![](https://s2.loli.net/2023/01/10/NbtsvmFVUd9DTjl.jpg)
