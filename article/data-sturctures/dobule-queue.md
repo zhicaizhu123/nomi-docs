@@ -116,3 +116,43 @@ class Dequeue {
   }
 }
 ```
+
+## 回文检查
+> 回文是正反都能读通的单词、词组、数或一系列字符的序列，例如 `madam` 或 `racecar`。
+
+有不同的算法可以检查一个词组或字符串是否为回文。最简单的方式是将字符串反向排列并检查它和原字符串是否相同。如果两者相同，那么它就是一个回文。我们也可以用栈来完成，但是利用数据结构来解决这个问题的最简单方法是使用双端队列。
+
+算法实现：
+```javascript
+function palindromeChecker(str) {
+  if (typeof str !== 'string' || !str.length) {
+    return false;
+  }
+  const dequeue = new Dequeue();
+  const lowerString = str.toLocaleLowerCase().split(' ').join('');
+  let isEqual = true;
+  let firstChar, lastChar;
+
+  for (let i = 0; i < lowerString.length; i++) {
+    dequeue.addBack(lowerString.charAt(i));
+  }
+
+  while (dequeue.size() > 1 && isEqual) {
+    firstChar = dequeue.removeFront();
+    lastChar = dequeue.removeBack();
+    if (firstChar !== lastChar) {
+      isEqual = false;
+    }
+  }
+
+  return isEqual;
+}
+```
+
+我们可以使用下面的代码来尝试 `palindromeChecker` 算法：
+```javascript
+console.log('abcba', palindromeChecker('abcba')) // true
+console.log('racecar', palindromeChecker('racecar')) // true
+console.log('Was it a car or a cat I saw', palindromeChecker('Was it a car or a cat I saw')) // true
+console.log('hello world', palindromeChecker('hello world')) // false
+```

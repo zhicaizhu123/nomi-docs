@@ -73,7 +73,7 @@ class Queue {
 ```javascript
 function hotPotato(elements, num) {
   const queue = new Queue()
-  const elimitatedList = []
+  const eliminated = []
 
   for(let i = 0; i < elements.length; i++) {
     queue.enqueue(elements[i])
@@ -83,11 +83,11 @@ function hotPotato(elements, num) {
     for(let i = 0; i < num; i++) {
       queue.enqueue(queue.dequeue())
     }
-    elimitatedList.push(queue.dequeue())
+    eliminated.push(queue.dequeue())
   }
 
   return {
-    elimitatedList,
+    eliminated,
     winner: queue.dequeue()
   }
 }
