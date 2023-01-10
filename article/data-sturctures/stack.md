@@ -62,15 +62,19 @@ class Stack {
   constructor() {
     // 为了保护数据内部元素
     items.set(this, {
-      queue: {},
+      stack: {},
       count: 0,
     })
+  }
+
+  getData() {
+    return items.get(this)
   }
 
   // 入栈
   push(data) {
     const target = items.get(this)
-    target.queue[target.count] = data
+    target.stack[target.count] = data
     target.count++
   }
 
@@ -78,15 +82,15 @@ class Stack {
   pop() {
     const target = items.get(this)
     target.count--
-    const result = target.queue[target.count]
-    Reflect.deleteProperty(target.queue, target.count)
+    const result = target.stack[target.count]
+    Reflect.deleteProperty(target.stack, target.count)
     return result
   }
 
   // 查看栈顶元素
   peek() {
     const target = items.get(this)
-    const result = target.queue[target.count - 1]
+    const result = target.stack[target.count - 1]
     return result
   }
 
@@ -98,7 +102,7 @@ class Stack {
   // 检查栈是否为空
   clear() {
     const target = items.get(this)
-    target.queue = {}
+    target.stack = {}
     target.count = 0
   }
 
