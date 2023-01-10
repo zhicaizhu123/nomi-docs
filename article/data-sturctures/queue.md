@@ -6,6 +6,7 @@
 - dequeue()：移除队列的第一项（即排在队列最前面的项）并返回被移除的元素；
 - peek()：返回队列中第一个元素——最先被添加，也将是最先被移除的元素。队列不做任何变动（不移除元素，只返回元素信息——）；
 - isEmpty()：如果队列中不包含任何元素，返回true，否则返回false；
+- clear()：移除队列里的所有元素；
 - size()：返回队列包含的元素个数。
 
 ## 实现
@@ -49,6 +50,13 @@ class Queue {
 
   isEmpty() {
     return this.size() === 0
+  }
+
+  clear() {
+    const target = items.get(this)
+    target.count = 0
+    target.lowestCount = 0
+    target.queue = {}
   }
 
   size() {
