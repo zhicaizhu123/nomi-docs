@@ -23,6 +23,7 @@
 ## [数据结构](/article/data-sturctures/README.md)
 - [栈](/article/data-sturctures/stack.md)
 - [队列](/article/data-sturctures/queue.md)
+- [双端队列](/article/data-sturctures/dobule-queue.md)
 
 ## 打包构建
 <!-- webpack相关 -->
