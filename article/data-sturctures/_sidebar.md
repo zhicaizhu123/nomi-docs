@@ -7,3 +7,6 @@
 - [双向循环链表](/article/data-sturctures/double-circular-linked-list.md)
 - [有序链表](/article/data-sturctures/sorted-linked-list.md)
 - [栈链表](/article/data-sturctures/stack-linked-list.md)
+- [集合](/article/data-sturctures/set.md)
+- [字典](/article/data-sturctures/dictionary.md)
+- [散列表](/article/data-sturctures/hash-table.md)
