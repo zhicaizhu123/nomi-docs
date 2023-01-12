@@ -50,7 +50,7 @@ class HashTable {
 
 
   put(key, value) {
-    if (key === void 0 || key === null) {
+    if (key !== void 0 && key !== null) {
       const hashKey = this.hashCode(key)
       this.table[hashKey] = new ValuePair(key, value)
       return true
@@ -127,7 +127,7 @@ class HashTable {
 ...
 
 put(key, value) {
-  if (key === void 0 || key === null) {
+  if (key !== void 0 && key !== null) {
     const hashKey = this.hashCode(key)
     if (this.table[hashKey] === void 0) {
       this.table[hashKey] = new LinkedList()
@@ -225,7 +225,7 @@ verifyRemoveSideEffect(key, removedPosition) {
 }
 
 put(key, value) {
-  if (key === void 0 || key === null) {
+  if (key !== void 0 && key !== null) {
     const hashKey = this.hashCode(key)
     if (this.table[hashKey] === void 0) {
       this.table[hashKey] = new ValuePair(key, value)
@@ -283,3 +283,6 @@ get(key) {
 ...
 }
 ```
+
+## ES6 Map类
+[📖说明文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Map)

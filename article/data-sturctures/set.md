@@ -111,7 +111,7 @@ isSubsetOf(otherSet) {
 ```
 
 ## ES6 Set类
-[说明文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set)
+[📖说明文档](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set)
 
 ### 并集
 ```javascript
