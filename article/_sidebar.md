@@ -29,6 +29,8 @@
   - [双向链表](/article/data-sturctures/double-linked-list.md)
   - [单向循环链表](/article/data-sturctures/circular-linked-list.md)  
   - [双向循环链表](/article/data-sturctures/double-circular-linked-list.md)
+  - [有序链表](/article/data-sturctures/sorted-linked-list.md)
+  - [栈链表](/article/data-sturctures/stack-linked-list.md)
 
 <!-- webpack相关 -->
 - 打包构建
