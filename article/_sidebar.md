@@ -24,8 +24,10 @@
 - [数据结构](/article/data-sturctures/README.md)
   - [栈](/article/data-sturctures/stack.md)
   - [队列](/article/data-sturctures/queue.md)
-  - [双端队列](/article/data-sturctures/dobule-queue.md)
+  - [双端队列](/article/data-sturctures/double-queue.md)
   - [链表](/article/data-sturctures/linked-list.md)
+  - [双向链表](/article/data-sturctures/double-linked-list.md)
+  - [单向循环链表](/article/data-sturctures/circular-linked-list.md)  
 
 <!-- webpack相关 -->
 - 打包构建

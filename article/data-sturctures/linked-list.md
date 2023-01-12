@@ -21,13 +21,26 @@
 - `size()`：返回链表包含的元素个数，与数组的 `length` 属性类似。
 - `toString()`：返回表示整个链表的字符串。由于列表项使用了`Node`类，就需要重写继承自 `JavaScript` 对象默认的 `toString` 方法，让其只输出元素的值。
 
-## 算法实现
+## 元素节点Node
+```javascript
+class Node {
+  constructor(element) {
+    this.element = element
+    this.next = void 0
+  }
+}
+```
+
+## 比较两个节点是否相同
 ```javascript
 // 用于比较两个元素是否相等
 function defaultEquals(a, b) {
   return a === b
 }
+```
 
+## 链表结构
+```javascript
 class LinkedList {
   constructor(equalsFn = defaultEquals) {
     this.head = void 0
@@ -36,17 +49,7 @@ class LinkedList {
   }
 
   push(element) {
-    const node = new Node(element)
-    if (!this.head) {
-      this.head = node
-    } else {
-      let current = this.head
-      while(current.next !== void 0) {
-        current = current.next
-      }
-      current.next = node
-    }
-    this.count++
+    this.insert(element, this.size())
   }
 
   insert(element, index) {
@@ -142,14 +145,9 @@ class LinkedList {
     return objString;
   }
 }
-
-class Node {
-  constructor(element) {
-    this.element = element
-    this.next = void 0
-  }
-}
 ```
+
+
 
 
 

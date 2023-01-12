@@ -16,6 +16,8 @@
 - `size()`：返回队列包含的元素个数。
 
 ## 实现
+
+
 ```javascript
 // 为了保护数据内部元素
 const items = new WeakMap()
