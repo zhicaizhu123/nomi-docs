@@ -48,6 +48,8 @@
   <!-- pnpm相关 -->
   - [pnpm](/article/pnpm/README.md)
 
+- [异常采集](/article/errorHandler/README.md)
+
 <!-- typescript相关 -->
 - [Typescript](/article/typescript/README.md)
 
