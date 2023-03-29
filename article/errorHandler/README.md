@@ -101,7 +101,7 @@ interface NormalErrorInfo {
 
 function normalErrorHandler(error: any) {
 	const report = {} as NormalErrorInfo
-	if (typeof window === 'undefined') {
+	if (!!globalThis.window) {
 		// 浏览器平台
 		report.url = location.href
 	}
